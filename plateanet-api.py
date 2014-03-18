@@ -40,7 +40,7 @@ def login():
     }
     r = requests.post("https://www.plateanet.com/Account/LogOn/", data)
 
-    #print r.text
+    print r.text
 
 
 def get_info_obra(name):
