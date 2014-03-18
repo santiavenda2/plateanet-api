@@ -1,0 +1,35 @@
+Funciones Wainraich y los frustrados
+Request URL:https://www.plateanet.com/Services/getFuncionesPorTeatroyObra
+Request Method:POST
+Status Code:200 OK
+
+Form data
+token:..leofdfojerh.
+nIdTeatro:4
+nIdInfoObra:4013
+
+Response
+{
+  "success":true,
+  "msg":null,
+  "objeto":[
+    {
+      "idFuncion":"67062",
+      "idSala":"134",
+      "Nombre":"viernes, 28 de marzo de 2014 23:00",
+      "ocupacion":"3",
+      "total":"609",
+      "disponible":"587"
+    },
+    {
+      "idFuncion":"66930",
+      "idSala":"134",
+      "Nombre":"viernes, 21 de marzo de 2014 23:00",
+      "ocupacion":"17",
+      "total":"539",
+      "disponible":"442"
+    }
+  ],
+  "status":"200",
+  "CantTotal":2
+}

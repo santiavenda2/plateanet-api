@@ -1,0 +1,267 @@
+Sectores y descuentos funcion 66930
+Request URL:https://www.plateanet.com/Services/getSectoresYDescuentos
+
+Form data
+token:..leofdfojerh.
+nIdFuncion:66930
+
+{
+  "success":true,
+  "msg":null,
+  "objeto":[
+    {
+      "idFuncion":"67062",
+      "IdSector":"303644",
+      "KeySector":"Platea",
+      "Sector":"Platea",
+      "Precio":180.00,
+      "Ocupacion":"16",
+      "Totales":"112",
+      "Disponible":"94",
+      "Maxima":14,
+      "Media":9,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Platea",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303645",
+      "KeySector":"Platea Lateral Dr",
+      "Sector":"Platea Lateral Dr",
+      "Precio":180.00,
+      "Ocupacion":"1",
+      "Totales":"115",
+      "Disponible":"113",
+      "Maxima":11,
+      "Media":7,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Platea Lateral Dr",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303646",
+      "KeySector":"Platea Lateral Iz",
+      "Sector":"Platea Lateral Iz",
+      "Precio":180.00,
+      "Ocupacion":"0",
+      "Totales":"120",
+      "Disponible":"120",
+      "Maxima":11,
+      "Media":7,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Platea Lateral Iz",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303648",
+      "KeySector":"Super-Pullman",
+      "Sector":"Super-Pullman",
+      "Precio":180.00,
+      "Ocupacion":"0",
+      "Totales":"98",
+      "Disponible":"98",
+      "Maxima":35,
+      "Media":30,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Super-Pullman",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303642",
+      "KeySector":"Palco-Bajo",
+      "Sector":"Palco-Bajo",
+      "Precio":160.00,
+      "Ocupacion":"0",
+      "Totales":"8",
+      "Disponible":"8",
+      "Maxima":4,
+      "Media":4,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Palco-Bajo",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303647",
+      "KeySector":"Pullman",
+      "Sector":"Pullman",
+      "Precio":160.00,
+      "Ocupacion":"0",
+      "Totales":"58",
+      "Disponible":"58",
+      "Maxima":29,
+      "Media":19,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Pullman",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303648",
+      "KeySector":"Super-Pullman",
+      "Sector":"Super-Pullman",
+      "Precio":160.00,
+      "Ocupacion":"0",
+      "Totales":"54",
+      "Disponible":"54",
+      "Maxima":35,
+      "Media":30,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Super-Pullman",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303641",
+      "KeySector":"Palco-Alto",
+      "Sector":"Palco-Alto",
+      "Precio":140.00,
+      "Ocupacion":"0",
+      "Totales":"16",
+      "Disponible":"16",
+      "Maxima":2,
+      "Media":2,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Palco-Alto",
+          "IsPin":"False"
+        }
+      ]
+    },
+    {
+      "idFuncion":"67062",
+      "IdSector":"303643",
+      "KeySector":"Palco-Balcon",
+      "Sector":"Palco-Balcon",
+      "Precio":140.00,
+      "Ocupacion":"7",
+      "Totales":"28",
+      "Disponible":"26",
+      "Maxima":4,
+      "Media":3,
+      "Promos":[
+        {
+          "Nombre":"LA NACION 2X1",
+          "idAsignacion":"19153",
+          "ReqValidacion":"True",
+          "RequiereCod":"False",
+          "CantidadValida":"2",
+          "Vendidas":"18",
+          "Quote":"18",
+          "Ocupacion":"Limitada",
+          "Info":"Info de la Promo",
+          "Img":"LA-NACION-2X1",
+          "Sector":"Palco-Balcon",
+          "IsPin":"False"
+        }
+      ]
+    }
+  ],
+  "status":"200",
+  "CantTotal":9
+}

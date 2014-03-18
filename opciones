@@ -1,0 +1,20 @@
+Selenium
+http://selenium-python.readthedocs.org/en/latest/getting-started.html
+
+Splinter
+http://splinter.cobrateam.info/docs/tutorial.html
+
+Mechanize
+http://wwwsearch.sourceforge.net/mechanize/
+https://views.scraperwiki.com/run/python_mechanize_cheat_sheet/
+http://www.pythonforbeginners.com/python-on-the-web/browsing-in-python-with-mechanize/
+http://www.pythonforbeginners.com/cheatsheet/python-mechanize-cheat-sheet/
+http://www.guyrutenberg.com/2012/03/29/mechanize-writing-bots-in-python-made-simple/
+
+Scrapy
+http://doc.scrapy.org/en/0.18/index.html
+
+BeautifulSoap + Requests
+http://www.crummy.com/software/BeautifulSoup/bs4/doc/
+http://docs.python-requests.org/en/latest/
+http://www.python-requests.org/en/latest/user/quickstart/
