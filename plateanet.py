@@ -76,7 +76,7 @@ def get_info_obra(name):
     """
     Usando el nombre (id_name) de la obra obtiene el id_obra y id_teatro
     """
-    obra_url = "https://www.plateanet.com/Obras/"+name
+    obra_url = "https://www.plateanet.com/Obras/" + name
 
     r = requests.get(obra_url)
 
@@ -144,7 +144,7 @@ def get_sectores_y_descuentos(id_funcion):
 
 
 def get_promociones_obra(nombre_obra):
-    print " ------------- OBRA: %s ----------------" %nombre_obra
+    print " ------------- OBRA: %s ----------------" % nombre_obra
     id_teatro_w, id_obra_w = get_info_obra(nombre_obra)
     funciones = get_funciones(id_teatro_w, id_obra_w)
     for id_funcion, nombre_funcion in funciones.iteritems():
@@ -156,13 +156,27 @@ def get_promociones_obra(nombre_obra):
         else:
             print "No se encontraron promociones para esta funcion"
 
-    print "\n"
+    return id_funcion, nombre_funcion
 
 
-def get_obras_con_promocion():
-    obras = get_obras_en_cartel()
-    for obra_id, obra_info in obras.iteritems():
+def get_obras_con_promocion(obras=get_obras_en_cartel().keys()):
+    for obra_id in obras:
         get_promociones_obra(obra_id)
+
+
+def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
+    import IPython.parallel as p
+    print "1"
+    rc = p.Client()
+    print "Client created"
+    lview = rc.load_balanced_view()
+    print "Load balanced view created"
+    parallel_result = lview.map(get_promociones_obra, obras)
+    print parallel_result
+    print "Task running, waiting for results"
+    lview.wait()
+    print "task finished"
+    print parallel_result
 
 
 if __name__ == "__main__":
@@ -171,4 +185,5 @@ if __name__ == "__main__":
     #get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     #login()
-    get_obras_con_promocion()
+    #get_obras_con_promocion(['wainraich-y-los-frustrados'])
+    get_obras_con_promocion_parallel(['wainraich-y-los-frustrados'])
