@@ -170,6 +170,9 @@ def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
     rc = p.Client()
     print "Client created"
     lview = rc.load_balanced_view()
+    dview = rc.direct_view()
+
+    dview.execute("from plateanet import *")
     print "Load balanced view created"
     parallel_result = lview.map(get_promociones_obra, obras)
     print parallel_result
@@ -177,13 +180,15 @@ def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
     lview.wait()
     print "task finished"
     print parallel_result
+    for r in parallel_result:
+        print r.get()
 
 
 if __name__ == "__main__":
 
     #get_initial_info()
-    get_promociones_obra("wainraich-y-los-frustrados")
+    #get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     #login()
     #get_obras_con_promocion(['wainraich-y-los-frustrados'])
-    get_obras_con_promocion_parallel(['wainraich-y-los-frustrados'])
+    get_obras_con_promocion_parallel()
