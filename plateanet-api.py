@@ -168,7 +168,7 @@ def get_obras_con_promocion():
 if __name__ == "__main__":
 
     #get_initial_info()
-    #get_promociones_obra("wainraich-y-los-frustrados")
+    get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     #login()
-    get_obras_con_promocion()
+    #get_obras_con_promocion()

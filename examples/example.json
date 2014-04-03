@@ -1,0 +1,25 @@
+{
+    nombre: "Wainraich y los frustrados",
+    nombre_id: "wainraich-y-los-frustrados",
+    id: 4013,
+    teatro_id: 4,
+    funciones:
+        [
+            {
+                id_funcion: 67062,
+                nombre: "viernes, 28 de marzo de 2014 23:00",
+                promociones: []
+            },
+            {
+                id_funcion: 67434,
+                nombre: "viernes, 04 de abril de 2014 23:00",
+                promociones:
+                    [
+                        {
+                            nombre: "LA NACION 2X1",
+                            sectores: [u'Platea', u'Platea Lateral Dr', u'Platea Lateral Iz', u'Super-Pullman', u'Pullman', u'Super-Pullman', u'Palco-Balcon']
+                        }
+                    ]
+            }
+        ]
+}
