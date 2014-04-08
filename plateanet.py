@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from collections import defaultdict
+from pymongo import MongoClient
 
 
 def get_obras_en_cartel():
@@ -87,8 +88,6 @@ def get_info_obra(name):
     id_obra = soup.find(id="Hidden2").get("value")
     id_teatro = soup.find(id="Hidden3").get("value")
 
-    print "obra_id: ", id_obra
-    print "teatro_id: ", id_teatro
     return id_teatro, id_obra
 
 
@@ -120,7 +119,13 @@ def get_sectores_y_descuentos(id_funcion):
     $.post("/Services/getSectoresYDescuentos",{token:"..leofdfojerh.",nIdFuncion:idFuncion}
     """
     params = {"token": "..leofdfojerh.", "nIdFuncion": id_funcion}
-    r = requests.post("https://www.plateanet.com/Services/getSectoresYDescuentos", params=params)
+    try:
+        r = requests.post("https://www.plateanet.com/Services/getSectoresYDescuentos", params=params, )
+    except requests.exceptions.ConnectionError as ce:
+        print "Connection error searching for id_funcion: %s" % id_funcion
+        print r
+        raise ce
+
     json_response = r.text
     json_resp = json.loads(json_response)
     promociones_encontradas = defaultdict(list)
@@ -137,51 +142,58 @@ def get_sectores_y_descuentos(id_funcion):
             disponibles = min(disp_reales, sector_disponible)
             if disponibles > 0:
                 promociones_encontradas[nombre_promo].append(sector_nombre)
-                #print "sector: ", sector_nombre, totales, sector_disponible
-                #print nombre_promo, promo["idAsignacion"], vendidas, quote, disponibles, "\n"
 
     return promociones_encontradas
 
 
 def get_promociones_obra(nombre_obra):
-    print " ------------- OBRA: %s ----------------" % nombre_obra
+    obra = {"nombre_obra": nombre_obra}
     id_teatro_w, id_obra_w = get_info_obra(nombre_obra)
+    obra["teatro"] = id_teatro_w
+    obra["_id"] = id_obra_w
     funciones = get_funciones(id_teatro_w, id_obra_w)
+    funciones_list = list()
     for id_funcion, nombre_funcion in funciones.iteritems():
-        print "Id funcion:", id_funcion, "   nombre funcion: ", nombre_funcion
+        funcion = {"_id": id_funcion, "nombre": nombre_funcion}
         promociones_encontradas = get_sectores_y_descuentos(id_funcion)
-        if promociones_encontradas:
-            for promo, sectores in promociones_encontradas.iteritems():
-                print "promo: ", promo, "   sectores:", sectores
-        else:
-            print "No se encontraron promociones para esta funcion"
 
-    return id_funcion, nombre_funcion
+        if promociones_encontradas:
+            promos = list()
+            for nombre_promo, sectores in promociones_encontradas.iteritems():
+                promo = {"nombre": nombre_promo, "sectores": sectores}
+                promos.append(promo)
+            funcion["promos"] = promos
+
+            funciones_list.append(funcion)
+
+    obra["funciones"] = funciones_list
+
+    return obra
 
 
 def get_obras_con_promocion(obras=get_obras_en_cartel().keys()):
-    for obra_id in obras:
-        get_promociones_obra(obra_id)
-
+    client = MongoClient()
+    db = client.plateanet
+    obras_collection = db.obras
+    for i, obra_id in enumerate(obras, start=1):
+        obra = get_promociones_obra(obra_id)
+        obras_collection.save(obra)
+        print "processing obra: %s (%d/%d)" % (obra_id, i, len(obras))
 
 def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
     import IPython.parallel as p
-    print "1"
     rc = p.Client()
-    print "Client created"
-    lview = rc.load_balanced_view()
-    dview = rc.direct_view()
 
-    dview.execute("from plateanet import *")
+    dview = rc.direct_view()
+    dview.execute("from plateanet import *", block=True)
     print "Load balanced view created"
+    lview = rc.load_balanced_view()
     parallel_result = lview.map(get_promociones_obra, obras)
     print parallel_result
     print "Task running, waiting for results"
-    lview.wait()
+    parallel_result.wait_interactive()
     print "task finished"
-    print parallel_result
-    for r in parallel_result:
-        print r.get()
+    parallel_result.display_outputs()
 
 
 if __name__ == "__main__":
@@ -191,4 +203,5 @@ if __name__ == "__main__":
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     #login()
     #get_obras_con_promocion(['wainraich-y-los-frustrados'])
-    get_obras_con_promocion_parallel()
+    get_obras_con_promocion(get_obras_en_cartel().keys())
+    #get_obras_con_promocion_parallel(get_obras_en_cartel().keys()[0:50])
