@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from collections import defaultdict
-from pymongo import MongoClient
+import dao
 
 
 def get_obras_en_cartel():
@@ -164,7 +164,7 @@ def get_promociones_obra(nombre_obra):
                 promos.append(promo)
             funcion["promos"] = promos
 
-            funciones_list.append(funcion)
+        funciones_list.append(funcion)
 
     obra["funciones"] = funciones_list
 
@@ -172,13 +172,12 @@ def get_promociones_obra(nombre_obra):
 
 
 def get_obras_con_promocion(obras=get_obras_en_cartel().keys()):
-    client = MongoClient()
-    db = client.plateanet
-    obras_collection = db.obras
+    d = dao.ObrasDAO()
     for i, obra_id in enumerate(obras, start=1):
         obra = get_promociones_obra(obra_id)
-        obras_collection.save(obra)
+        d.save(obra)
         print "processing obra: %s (%d/%d)" % (obra_id, i, len(obras))
+
 
 def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
     import IPython.parallel as p
