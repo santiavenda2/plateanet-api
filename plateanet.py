@@ -4,6 +4,20 @@ import requests
 import json
 from collections import defaultdict
 import dao
+try:
+    from settings import plateanet_user, plateanet_password
+except:
+    plateanet_user = "user name"
+    plateanet_password = "user password"
+
+import urllib3
+
+ca_certs = "/etc/ssl/certs/ca-certificates.crt"  # Or wherever it lives.
+
+http = urllib3.PoolManager(
+    cert_reqs='CERT_REQUIRED', # Force certificate check.
+    ca_certs=ca_certs,         # Path to your certificate bundle.
+)
 
 
 def get_obras_en_cartel():
@@ -65,8 +79,8 @@ def login():
     """
     # you have to complete this to login plateanet user
     data = {
-        "IdentityCustomer": "user name",
-        "clave": "user pass"
+        "IdentityCustomer": plateanet_user,
+        "clave": plateanet_password
     }
     r = requests.post("https://www.plateanet.com/Account/LogOn/", data)
 
@@ -196,11 +210,12 @@ def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
 
 
 if __name__ == "__main__":
-
+    obras = get_obras_en_cartel()
+    print json.dumps(obras, sort_keys=True, indent=4)
     #get_initial_info()
     #get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     #login()
     #get_obras_con_promocion(['wainraich-y-los-frustrados'])
-    get_obras_con_promocion(get_obras_en_cartel().keys())
+    # get_obras_con_promocion(get_obras_en_cartel().keys())
     #get_obras_con_promocion_parallel(get_obras_en_cartel().keys()[0:50])
