@@ -11,7 +11,7 @@ except:
     plateanet_password = "user password"
 
 
-// Certificados: leer https://urllib3.readthedocs.org/en/latest/security.html#certifi-with-urllib3
+# Certificados: leer https://urllib3.readthedocs.org/en/latest/security.html#certifi-with-urllib3
 import urllib3
 
 ca_certs = "/etc/ssl/certs/ca-certificates.crt"  # Or wherever it lives.
@@ -20,7 +20,7 @@ http = urllib3.PoolManager(
     cert_reqs='CERT_REQUIRED', # Force certificate check.
     ca_certs=ca_certs,         # Path to your certificate bundle.
 )
-// end certificados
+# end certificados
 
 def get_obras_en_cartel():
     """
@@ -214,10 +214,12 @@ def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
 if __name__ == "__main__":
     # obras = get_obras_en_cartel()
     # print json.dumps(obras, sort_keys=True, indent=4)
-    #get_initial_info()
+    # get_initial_info()
     #get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
-    #login()
-    get_obras_con_promocion(['wainraich-y-los-frustrados'])
+    # login()
+    #get_obras_con_promocion(['historias-de-divan---la-obra', 'wainraich-y-los-frustrados'])
     # get_obras_con_promocion(get_obras_en_cartel().keys())
     #get_obras_con_promocion_parallel(get_obras_en_cartel().keys()[0:50])
+
+    print get_info_obra('historias-de-divan---la-obra')
