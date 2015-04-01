@@ -100,9 +100,11 @@ def get_info_obra(name):
     html = r.text
 
     soup = BeautifulSoup(html)
-
-    id_obra = soup.find(id="Hidden2").get("value")
-    id_teatro = soup.find(id="Hidden3").get("value")
+    div_info_obra = soup.find(id="info")
+    print div_info_obra
+    id_obra = div_info_obra.get("idobra")
+    id_teatro = div_info_obra.get("idteatro")
+    print id_obra , id_teatro
 
     return id_teatro, id_obra
 
@@ -218,8 +220,8 @@ if __name__ == "__main__":
     #get_promociones_obra("wainraich-y-los-frustrados")
     #get_promociones_obra("escenas-de-la-vida-conyugal")
     # login()
-    #get_obras_con_promocion(['historias-de-divan---la-obra', 'wainraich-y-los-frustrados'])
+    get_obras_con_promocion(['historias-de-divan---la-obra', 'wainraich-y-los-frustrados'])
     # get_obras_con_promocion(get_obras_en_cartel().keys())
     #get_obras_con_promocion_parallel(get_obras_en_cartel().keys()[0:50])
 
-    print get_info_obra('historias-de-divan---la-obra')
+    # print get_info_obra('historias-de-divan---la-obra')
