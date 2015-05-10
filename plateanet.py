@@ -7,20 +7,22 @@ import dao
 try:
     from settings import plateanet_user, plateanet_password
 except:
+    # you have to complete this to login plateanet user
     plateanet_user = "user name"
     plateanet_password = "user password"
 
 
 # Certificados: leer https://urllib3.readthedocs.org/en/latest/security.html#certifi-with-urllib3
-import urllib3
-
-ca_certs = "/etc/ssl/certs/ca-certificates.crt"  # Or wherever it lives.
-
-http = urllib3.PoolManager(
-    cert_reqs='CERT_REQUIRED', # Force certificate check.
-    ca_certs=ca_certs,         # Path to your certificate bundle.
-)
+# import urllib3
+#
+# ca_certs = "/etc/ssl/certs/ca-certificates.crt"  # Or wherever it lives.
+#
+# http = urllib3.PoolManager(
+#     cert_reqs='CERT_REQUIRED', # Force certificate check.
+#     ca_certs=ca_certs,         # Path to your certificate bundle.
+# )
 # end certificados
+
 
 def get_obras_en_cartel():
     """
@@ -79,7 +81,6 @@ def login():
     """
     login on www.plateanet.com
     """
-    # you have to complete this to login plateanet user
     data = {
         "IdentityCustomer": plateanet_user,
         "clave": plateanet_password
@@ -101,10 +102,8 @@ def get_info_obra(name):
 
     soup = BeautifulSoup(html)
     div_info_obra = soup.find(id="info")
-    print div_info_obra
     id_obra = div_info_obra.get("idobra")
     id_teatro = div_info_obra.get("idteatro")
-    print id_obra , id_teatro
 
     return id_teatro, id_obra
 
@@ -118,16 +117,18 @@ def get_funciones(id_teatro, id_obra):
     cantidadPedida=parseInt($('#dropEntr').val());
     $.post("/Services/getFuncionesPorTeatroyObra",{token:"..leofdfojerh.",nIdTeatro:idTeatro,nIdInfoObra:idObra}
     """
+    print "Buscando funciones..."
     params = {"token": "..leofdfojerh.", "nIdTeatro": id_teatro, "nIdInfoObra": id_obra}
-    r = requests.post("https://www.plateanet.com/Services/getFuncionesPorTeatroyObra", params=params)
-    json_response = r.text
-    json_resp = json.loads(json_response)
+    response = requests.post("https://www.plateanet.com/Services/getFuncionesPorTeatroyObra", params=params)
+    json_resp = json.loads(response.text)
+    # print json.dumps(json_resp, indent=4)
     funciones = {}
-    for funcion in json_resp["objeto"]:
+    for funcion in json_resp["objeto"]['Funciones']:
+        # print funcion
         id_funcion = funcion["idFuncion"]
         nombre_funcion = funcion["Nombre"]
         funciones[id_funcion] = nombre_funcion
-
+    print "Funciones encontradas"
     return funciones
 
 
@@ -136,31 +137,34 @@ def get_sectores_y_descuentos(id_funcion):
     Usando el id de la obra obtiene los sectores y descuentos
     $.post("/Services/getSectoresYDescuentos",{token:"..leofdfojerh.",nIdFuncion:idFuncion}
     """
+    print "Buscando Sectores y descuentos"
     params = {"token": "..leofdfojerh.", "nIdFuncion": id_funcion}
     try:
         r = requests.post("https://www.plateanet.com/Services/getSectoresYDescuentos", params=params, )
     except requests.exceptions.ConnectionError as ce:
         print "Connection error searching for id_funcion: %s" % id_funcion
-        print r
         raise ce
 
     json_response = r.text
     json_resp = json.loads(json_response)
+    # print json.dumps(json_resp, indent=4)
     promociones_encontradas = defaultdict(list)
     for sector in json_resp["objeto"]:
-        totales = int(sector['Totales']) #parseInt(Sectores.objeto[i].Totales)
-        sector_disponible = int(sector['Disponible']) #parseInt(Sectores.objeto[i].Disponible)
+        totales = int(sector['Totales'])
+        sector_disponible = int(sector['Disponible'])
         sector_nombre = sector['Sector']
-        for promo in sector["Promos"]:
+        sector_precio = sector['Precio']
+        promos_valida = [promo for promo in sector["Promos"] if promo["Nombre"] != "S/D"]
+        for promo in promos_valida:
             nombre_promo = promo["Nombre"]
-            vendidas = int(promo["Vendidas"]) #parseInt(Sectores.objeto[i].Promos[j].Vendidas);
-            quote = int(promo["Quote"]) #parseInt(Sectores.objeto[i].Promos[j].Quote)
-            tope = min(quote, totales)
-            disp_reales = 0 if tope - vendidas < 0 else tope - vendidas
-            disponibles = min(disp_reales, sector_disponible)
+            vendidas = int(promo["Vendidas"])
+            tope = int(promo["Quote"])
+            disp_teorica = 0 if tope - vendidas < 0 else tope - vendidas
+            disponibles = min(disp_teorica, sector_disponible)
             if disponibles > 0:
                 promociones_encontradas[nombre_promo].append(sector_nombre)
 
+    print "Fin busqueda de promociones (funcion: {})".format(id_funcion)
     return promociones_encontradas
 
 
@@ -189,15 +193,20 @@ def get_promociones_obra(nombre_obra):
     return obra
 
 
-def get_obras_con_promocion(obras=get_obras_en_cartel().keys()):
+def get_obras_con_promocion(obras=None):
+    if obras is None:
+        obras = get_obras_en_cartel().keys()
     d = dao.ObrasDAO()
     for i, obra_id in enumerate(obras, start=1):
+        print "processing obra: %s (%d/%d)" % (obra_id, i, len(obras))
         obra = get_promociones_obra(obra_id)
         d.save(obra)
-        print "processing obra: %s (%d/%d)" % (obra_id, i, len(obras))
 
 
-def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
+def get_obras_con_promocion_parallel(obras=None):
+    if obras is None:
+        obras = get_obras_en_cartel().keys()
+
     import IPython.parallel as p
     rc = p.Client()
 
@@ -213,15 +222,9 @@ def get_obras_con_promocion_parallel(obras=get_obras_en_cartel().keys()):
     parallel_result.display_outputs()
 
 
-if __name__ == "__main__":
-    # obras = get_obras_en_cartel()
-    # print json.dumps(obras, sort_keys=True, indent=4)
-    # get_initial_info()
-    #get_promociones_obra("wainraich-y-los-frustrados")
-    #get_promociones_obra("escenas-de-la-vida-conyugal")
-    # login()
-    get_obras_con_promocion(['historias-de-divan---la-obra', 'wainraich-y-los-frustrados'])
-    # get_obras_con_promocion(get_obras_en_cartel().keys())
-    #get_obras_con_promocion_parallel(get_obras_en_cartel().keys()[0:50])
 
-    # print get_info_obra('historias-de-divan---la-obra')
+obras = get_obras_en_cartel()
+print obras
+# obra = get_promociones_obra("wainraich-y-los-frustrados")
+# print json.dumps(obra, indent=4)
+# get_obras_con_promocion()

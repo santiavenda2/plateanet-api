@@ -40,7 +40,8 @@ if __name__ == "__main__":
     print "promociones: ", dao.get_promociones()
     obras_la_nacion = dao.get_obras_con_promocion()
     for o in obras_la_nacion:
-        print json.dumps(o, indent=3, ensure_ascii=False)
+        # print json.dumps(o, indent=2, ensure_ascii=False)
+        print o['nombre_obra']
 
     print "\n Info Obra \n"
     print json.dumps(dao.get_info_obra("wainraich-y-los-frustrados"), indent=3, ensure_ascii=False)
