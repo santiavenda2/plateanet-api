@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-import requests
+from requests import Session, exceptions, utils
 import json
 from collections import defaultdict
 import dao
+
+
 try:
     from settings import plateanet_user, plateanet_password
 except:
@@ -24,13 +26,22 @@ except:
 # end certificados
 
 
-def get_obras_en_cartel():
+PLATEANET_URL = "https://www.plateanet.com/"
+PLATEANET_OBRA_URL = "https://www.plateanet.com/Obras/"
+PLATEANET_GET_SECTORES_Y_DESCUENTOS_URL = "https://www.plateanet.com/Services/getSectoresYDescuentos"
+PLATEANET_GET_FUNCIONES_URL = "https://www.plateanet.com/Services/getFuncionesPorTeatroyObra"
+
+
+def get_obras_en_cartel(session=None):
     """
     Obtiene todas las obras con sus ids
     """
-    r = requests.get("https://www.plateanet.com/")
+    if session is None:
+        session = Session()
 
-    html = r.text
+    r = session.get(PLATEANET_URL)
+
+    html = utils.get_unicode_from_response(r)
 
     soup = BeautifulSoup(html)
 
@@ -43,14 +54,17 @@ def get_obras_en_cartel():
             nombre_obra = obra.text
             obras[id_obra] = (nombre_obra, url_obra)
 
+    print u"Obras en cartel: \n {obras}".format(obras=obras.keys())
     return obras
 
 
-def get_initial_info():
+def get_initial_info(session=None):
     """
     Get all the shows and promotions.
     """
-    r = requests.get("https://www.plateanet.com/")
+    if session is None:
+        session = Session()
+    r = session.get(PLATEANET_URL)
 
     html = r.text
 
@@ -58,7 +72,7 @@ def get_initial_info():
 
     obras_options = soup.select("#Obras > option")
     obras = []
-    print "\nOBRAS --------- \n"
+    print u"\nOBRAS --------- \n"
     for obra in obras_options:
         if obra.get('value') is not None:
             print obra.text, get_obra_id(obra.get('value'))
@@ -66,7 +80,7 @@ def get_initial_info():
 
     promos_option = soup.select("#promo > option")
     promos = []
-    print "\nPROMOS --------- \n"
+    print u"\nPROMOS --------- \n"
     for promo in promos_option:
         if promo.get('value') is not None:
             print promo.text, promo.get('value')
@@ -77,26 +91,30 @@ def get_obra_id(url):
     return url.rsplit("/", 1)[1]
 
 
-def login():
+def login(session=None):
     """
     login on www.plateanet.com
     """
+    if session is None:
+        session = Session()
     data = {
         "IdentityCustomer": plateanet_user,
         "clave": plateanet_password
     }
-    r = requests.post("https://www.plateanet.com/Account/LogOn/", data)
+    r = session.post("https://www.plateanet.com/Account/LogOn/", data)
 
     print r.text
 
 
-def get_info_obra(name):
+def get_info_obra(name, session=None):
     """
     Usando el nombre (id_name) de la obra obtiene el id_obra y id_teatro
     """
-    obra_url = "https://www.plateanet.com/Obras/" + name
+    if session is None:
+        session = Session()
 
-    r = requests.get(obra_url)
+    obra_url = PLATEANET_OBRA_URL + name
+    r = session.get(obra_url)
 
     html = r.text
 
@@ -108,7 +126,7 @@ def get_info_obra(name):
     return id_teatro, id_obra
 
 
-def get_funciones(id_teatro, id_obra):
+def get_funciones(id_teatro, id_obra, session=None):
     """
     Usando id_teatro y id_obra obtiene los id_funciones de la obra
 
@@ -117,37 +135,36 @@ def get_funciones(id_teatro, id_obra):
     cantidadPedida=parseInt($('#dropEntr').val());
     $.post("/Services/getFuncionesPorTeatroyObra",{token:"..leofdfojerh.",nIdTeatro:idTeatro,nIdInfoObra:idObra}
     """
-    print "Buscando funciones..."
+    if session is None:
+        session = Session()
+
     params = {"token": "..leofdfojerh.", "nIdTeatro": id_teatro, "nIdInfoObra": id_obra}
-    response = requests.post("https://www.plateanet.com/Services/getFuncionesPorTeatroyObra", params=params)
+    response = session.post(PLATEANET_GET_FUNCIONES_URL, params=params)
     json_resp = json.loads(response.text)
-    # print json.dumps(json_resp, indent=4)
     funciones = {}
     for funcion in json_resp["objeto"]['Funciones']:
-        # print funcion
         id_funcion = funcion["idFuncion"]
         nombre_funcion = funcion["Nombre"]
         funciones[id_funcion] = nombre_funcion
-    print "Funciones encontradas"
     return funciones
 
 
-def get_sectores_y_descuentos(id_funcion):
+def get_sectores_y_descuentos(id_funcion, session=None):
     """
     Usando el id de la obra obtiene los sectores y descuentos
     $.post("/Services/getSectoresYDescuentos",{token:"..leofdfojerh.",nIdFuncion:idFuncion}
     """
-    print "Buscando Sectores y descuentos"
+    if session is None:
+        session = Session()
     params = {"token": "..leofdfojerh.", "nIdFuncion": id_funcion}
     try:
-        r = requests.post("https://www.plateanet.com/Services/getSectoresYDescuentos", params=params, )
-    except requests.exceptions.ConnectionError as ce:
-        print "Connection error searching for id_funcion: %s" % id_funcion
+        r = session.post(PLATEANET_GET_SECTORES_Y_DESCUENTOS_URL, params=params)
+    except exceptions.ConnectionError as ce:
+        print u"Connection error searching for id_funcion: {}".format(id_funcion)
         raise ce
 
     json_response = r.text
     json_resp = json.loads(json_response)
-    # print json.dumps(json_resp, indent=4)
     promociones_encontradas = defaultdict(list)
     for sector in json_resp["objeto"]:
         totales = int(sector['Totales'])
@@ -164,20 +181,27 @@ def get_sectores_y_descuentos(id_funcion):
             if disponibles > 0:
                 promociones_encontradas[nombre_promo].append(sector_nombre)
 
-    print "Fin busqueda de promociones (funcion: {})".format(id_funcion)
     return promociones_encontradas
 
 
-def get_promociones_obra(nombre_obra):
+def get_promociones_obra(nombre_obra, session=None):
+    if session is None:
+        session = Session()
+
     obra = {"nombre_obra": nombre_obra}
-    id_teatro_w, id_obra_w = get_info_obra(nombre_obra)
+    print u"Buscando info: {}".format(nombre_obra)
+    id_teatro_w, id_obra_w = get_info_obra(nombre_obra, session)
     obra["teatro"] = id_teatro_w
     obra["_id"] = id_obra_w
-    funciones = get_funciones(id_teatro_w, id_obra_w)
+
+    print u"Buscando funciones..."
+    funciones = get_funciones(id_teatro_w, id_obra_w, session)
+
+    print u"Buscando Sectores y descuentos"
     funciones_list = list()
     for id_funcion, nombre_funcion in funciones.iteritems():
         funcion = {"_id": id_funcion, "nombre": nombre_funcion}
-        promociones_encontradas = get_sectores_y_descuentos(id_funcion)
+        promociones_encontradas = get_sectores_y_descuentos(id_funcion, session)
 
         if promociones_encontradas:
             promos = list()
@@ -194,12 +218,14 @@ def get_promociones_obra(nombre_obra):
 
 
 def get_obras_con_promocion(obras=None):
+    session = Session()
     if obras is None:
-        obras = get_obras_en_cartel().keys()
+        obras = get_obras_en_cartel(session=session).keys()
     d = dao.ObrasDAO()
+    total_obras = len(obras)
     for i, obra_id in enumerate(obras, start=1):
-        print "processing obra: %s (%d/%d)" % (obra_id, i, len(obras))
-        obra = get_promociones_obra(obra_id)
+        print u"processing obra: {} ({}/{})".format(obra_id, i, total_obras)
+        obra = get_promociones_obra(obra_id, session=session)
         d.save(obra)
 
 
@@ -212,19 +238,25 @@ def get_obras_con_promocion_parallel(obras=None):
 
     dview = rc.direct_view()
     dview.execute("from plateanet import *", block=True)
-    print "Load balanced view created"
+    print u"Load balanced view created"
     lview = rc.load_balanced_view()
     parallel_result = lview.map(get_promociones_obra, obras)
     print parallel_result
-    print "Task running, waiting for results"
+    print u"Task running, waiting for results"
     parallel_result.wait_interactive()
-    print "task finished"
+    print u"task finished"
     parallel_result.display_outputs()
 
 
 
-obras = get_obras_en_cartel()
-print obras
-# obra = get_promociones_obra("wainraich-y-los-frustrados")
+# obras = get_obras_en_cartel()
+# print obras.keys()
+# get_promociones_obra("wainraich-y-los-frustrados")
+# obra = get_promociones_obra("al-mundo-en-clarinete")
+# obra = get_promociones_obra()
 # print json.dumps(obra, indent=4)
-# get_obras_con_promocion()
+# obras = [u"al-mundo-en-clarinete",
+#          u"wainraich-y-los-frustrados",
+#          u'no-toques-\u2013--send-\u2013-sin-mirar-a-quien']
+# get_obras_con_promocion(obras)
+get_obras_con_promocion()
