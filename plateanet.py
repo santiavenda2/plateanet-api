@@ -237,6 +237,7 @@ def get_obras_con_promocion_parallel(obras=None):
     rc = p.Client()
 
     dview = rc.direct_view()
+    dview.execute("from requests import Session, exceptions, utils", block=True)
     dview.execute("from plateanet import *", block=True)
     print u"Load balanced view created"
     lview = rc.load_balanced_view()
@@ -259,4 +260,7 @@ def get_obras_con_promocion_parallel(obras=None):
 #          u"wainraich-y-los-frustrados",
 #          u'no-toques-\u2013--send-\u2013-sin-mirar-a-quien']
 # get_obras_con_promocion(obras)
-get_obras_con_promocion()
+# get_obras_con_promocion()
+
+if __name__ == "__main__":
+    get_obras_con_promocion_parallel()
