@@ -1,5 +1,5 @@
 beautifulsoup4==4.3.2
-certifi==14.5.14
+certifi==2020.6.20
 ipython==3.0.0
 pymongo==2.8
 pyzmq==14.5.0
