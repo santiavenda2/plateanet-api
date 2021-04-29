@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "09:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: ipython
+    versions:
+    - 7.19.0
+    - 7.20.0
+    - 7.21.0
+  - dependency-name: pyzmq
+    versions:
+    - 22.0.1
+    - 22.0.2
+  - dependency-name: pymongo
+    versions:
+    - 3.11.2
